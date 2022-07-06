@@ -1,0 +1,332 @@
+###Python_kivy_game(question_with_multiple_choices)
+###Created by Allan Olave
+
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.uix.spinner import Spinner
+from kivy.base import runTouchApp
+from functools import partial
+import random
+
+class Exe_game(FloatLayout):
+	def __init__(self, **kwargs):
+		super(Exe_game, self).__init__(**kwargs)
+		self.count=0
+		self.count_win=0
+		self.list_exe=[]
+		self.option_num=6
+		self.ab=RandomQuestion(self.option_num)
+		self.a=TextInput(multiline=True, font_size=50, pos_hint={'x':0, 'y':0.75}, size_hint=(1, 0.25), background_color=(0.933, 0.933, 0.933, 1), halign='center', readonly=True)
+		self.b=TextInput(multiline=True, font_size=40, pos_hint={'x':0.16, 'y':0.64},size_hint=(0.84, 0.11), background_color=(0, 1, 1, 1), readonly=True)
+		self.c=TextInput(multiline=True, font_size=40, pos_hint={'x':0.16, 'y':0.53},size_hint=(0.84, 0.11), background_color=(0, 1, 1, 1), readonly=True)
+		self.d=TextInput(multiline=True, font_size=40, pos_hint={'x':0.16, 'y':0.42},size_hint=(0.84, 0.11), background_color=(0, 1, 1, 1), readonly=True)
+		self.e=TextInput(multiline=True, font_size=40, pos_hint={'x':0.16, 'y':0.31},size_hint=(0.84, 0.11), background_color=(0, 1, 1, 1), readonly=True)
+		self.f=TextInput(multiline=True, font_size=40, pos_hint={'x':0, 'y':0.20},size_hint=(1, 0.11), background_color=(1, 1, 1, 1), readonly=True)
+		self.g=Button(text='A.', font_size=30, pos_hint={'x':0, 'y':0.64}, size_hint=(0.16, 0.11))
+		self.h=Button(text='B.', font_size=30, pos_hint={'x':0, 'y':0.53}, size_hint=(0.16, 0.11))
+		self.i=Button(text='C.', font_size=30, pos_hint={'x':0, 'y':0.42}, size_hint=(0.16, 0.11))
+		self.j=Button(text='D.', font_size=30, pos_hint={'x':0, 'y':0.31}, size_hint=(0.16, 0.11))
+		self.k=Button(text='Final Answer', font_size=30, pos_hint={'x':0, 'y':0.1}, size_hint=(0.333, 0.1))		
+		self.l=Button(text='Submit', font_size=30, pos_hint={'x':0.333, 'y':0.1}, size_hint=(0.333, 0.1))		
+		self.m=Button(text='Check', font_size=30, pos_hint={'x':0.667, 'y':0.1}, size_hint=(0.333, 0.1))
+		self.n=Spinner(text='Option', font_size=30, pos_hint={'x':0, 'y':0}, size_hint=(0.333, 0.1), values=('Question', '5 Questions', '10 Questions'))
+		self.o=Button(text='Question', font_size=30, pos_hint={'x':0.333, 'y':0}, size_hint=(0.333, 0.1))
+		self.p=Spinner(text='Menu', font_size=30, pos_hint={'x':0.667, 'y':0}, size_hint=(0.333, 0.1), values=('Game Play', 'Score', 'Exit', 'Reset'))
+#######Final Answer
+		self.k.bind(on_press=self.final_btn_pressed)
+#######Submit
+		self.l.bind(on_press=self.submit_btn_pressed)
+#######Next Question
+		self.o.bind(on_press=self.question_btn_pressed)		
+		self.g.bind(on_press=partial(self.answer, 'a'))
+		self.h.bind(on_press=partial(self.answer, 'b'))
+		self.i.bind(on_press=partial(self.answer, 'c'))
+		self.j.bind(on_press=partial(self.answer, 'd'))
+
+		self.p.bind(text=self.spinner_menu)
+		self.n.bind(text=self.spinner_option)		
+
+		self.add_widget(self.a)
+		self.add_widget(self.b)
+		self.add_widget(self.c)
+		self.add_widget(self.d)
+		self.add_widget(self.e)
+		self.add_widget(self.f)
+		self.add_widget(self.g)
+		self.add_widget(self.h)
+		self.add_widget(self.i)
+		self.add_widget(self.j)
+		self.add_widget(self.k)
+		self.add_widget(self.l)
+		self.add_widget(self.m)
+		self.add_widget(self.n)
+		self.add_widget(self.o)
+		self.add_widget(self.p)
+		self.start_event()
+####ok final button pressed
+	def final_btn_pressed(self, instance):
+		if self.validate_answr():
+			self.btn_disabl(True)
+			self.evnt3_submit(True, False)
+		else:
+			self.pop_warnings('Close Window', 'Select Answer')
+####
+
+####ok submit button pressed
+	def submit_btn_pressed(self, instance):
+		self.check(self)
+		self.btn_color((0, 1, 1, 1))
+		self.evnt1_start(True, False)
+####
+
+####ok Next question button pressed
+	def question_btn_pressed(self, instance):
+		if self.generate_ques_choices():
+			self.evnt2_fnal_ans(True, False)
+			self.btn_disabl(False)
+		
+		
+####ok Start event function
+	def start_event(self):
+		self.btn_disabl(True)
+		self.evnt1_start(True, False)
+####
+
+#### ok final answer button pressed		
+	def validate_answr(self):
+		try:
+			if answ!=[]:
+				return True
+		except:
+			return False
+			
+####
+
+####ok final answer button pressed
+	def btn_disabl(self, disabl):
+		self.g.disabled=disabl
+		self.h.disabled=disabl
+		self.i.disabled=disabl
+		self.j.disabled=disabl
+####
+
+####ok final answer button pressed
+	def evnt3_submit(self, disabl, disabl2):
+		self.k.disabled=disabl
+		self.l.disabled=disabl2
+		self.o.disabled=disabl
+####
+
+	def btn_color(self, clor):
+		self.b.background_color=clor
+		self.c.background_color=clor
+		self.d.background_color=clor
+		self.e.background_color=clor
+
+####ok submit button pressed		
+	def check(self, instance):
+		ref=self.f.text.strip()
+		ref=self.f.text.lower()
+		if answ[0]=='a':
+			ans=self.b.text.strip()
+			ans=self.b.text.lower()
+			if ref==ans:
+				self.pop_win()
+				answ.clear()
+			else:
+				self.pop_loose()
+				answ.clear()
+		elif answ[0]=='b':
+			ans=self.c.text.strip()
+			ans=self.c.text.lower()
+			if ref==ans:
+				self.pop_win()
+				answ.clear()
+			else:
+				self.pop_loose()
+				answ.clear()
+		elif answ[0]=='c':
+			ans=self.d.text.strip()
+			ans=self.d.text.lower()
+			if ref==ans:
+				self.pop_win()
+				answ.clear()
+			else:
+				self.pop_loose()
+				answ.clear()
+		elif answ[0]=='d':
+			ans=self.e.text.strip()
+			ans=self.e.text.lower()
+			if ref==ans:
+				self.pop_win()
+				answ.clear()
+			else:
+				self.pop_loose()
+				answ.clear()
+####
+
+####ok submit button pressed
+	def evnt1_start(self, disabl, disabl2):
+		self.k.disabled=disabl
+		self.l.disabled=disabl
+		self.o.disabled=disabl2
+		self.f.password=disabl2
+		self.f.foreground_color=(0, 0, 0, 1)
+####
+
+####ok Next question button pressed
+	def generate_ques_choices(self):
+		run=True
+		while run:
+			try:
+				ques, ans, choices=self.ab.generate_questions_choices()
+				self.count+=1
+				self.list_exe.append(self.count)
+				run=False
+			except:
+				run=False
+		try:
+			self.a.text=ques
+			self.f.text=ans
+			self.b.text=choices[0]
+			self.c.text=choices[1]
+			self.d.text=choices[2]
+			self.e.text=choices[3]
+			return True
+		except:
+			self.pop_warnings('Close Window', 'No Questions Left')
+			return False
+
+####
+	def score(self):
+		txt="SCORE"
+		title=(f"Correct Answer\n\n{self.count_win}\n______________\n\nQuestion Taken\n\n{self.count}\n\n\n")
+		self.pop_score(txt, title)
+		
+####ok next question button pressed		
+	def evnt2_fnal_ans(self, disabl, disabl2):
+		self.k.disabled=disabl2
+		self.l.disabled=disabl
+		self.o.disabled=disabl
+		self.f.foreground_color=(1, 1, 1, 0)
+####				
+		
+####ok Choices button pressed		
+	def answer(self, answr, instance):
+		global answ
+		answ=[]
+		if answr=='a':
+			self.b.background_color=(0.7, 0.2, 1, 1)
+		elif answr=='b':
+			self.c.background_color=(0.7, 0.2, 1, 1)
+		elif answr=='c':
+			self.d.background_color=(0.7, 0.2, 1, 1)
+		elif answr=='d':
+			self.e.background_color=(0.7, 0.2, 1, 1)
+		if not answr=='a':
+			self.b.background_color=(0, 1, 1, 1)
+		if not answr=='b':
+			self.c.background_color=(0, 1, 1, 1)
+		if not answr=='c':
+			self.d.background_color=(0, 1, 1, 1)
+		if not answr=='d':
+			self.e.background_color=(0, 1, 1, 1)
+		answ.append(answr)
+####
+
+				
+	def pop_warnings(self, txt, title):
+		content=Button(text=txt, size_hint=(0.3, 0.9), background_color=(0, 0.9, 0, 1), font_size=35,)
+		pop_win=Popup(title=title, content=content, size_hint=(0.5, 0.5), title_size=35, title_align='center', auto_dismiss=False)
+		content.bind(on_press=pop_win.dismiss)
+		pop_win.open()
+	def pop_score(self, txt, title):
+		content=Button(text=txt, size_hint=(0.3, 0.4), background_color=(0, 0.9, 0, 1), font_size=35,)
+		pop_win=Popup(title=title, content=content, size_hint=(0.5, 0.5), title_size=35, title_align='center', auto_dismiss=False)
+		content.bind(on_press=pop_win.dismiss)
+		pop_win.open()
+
+	def pop_win(self):
+		content=Button(text='Close Window', size_hint=(0.3, 0.3), background_color=(0, 0.9, 0, 1), font_size=35)
+		pop_win= Popup(title = 'Congratulation\'s!!!\n You got the right answer', content=content, size_hint=(0.6, 0.5), title_size=40, auto_dismiss=False)
+		content.bind(on_press=pop_win.dismiss)
+		pop_win.open()
+		if self.count<=len(self.ab.list_orig):
+			self.count_win+=1
+	def pop_loose(self):
+		content=Button(text='Close Window', size_hint=(0.3, 0.3), background_color=(0, 0.9, 0, 1), font_size=35,)
+		pop_win=Popup(title='Sorry.\n\nWrong Answer.', content=content, size_hint=(0.5, 0.5), title_size=40, auto_dismiss=False)
+		content.bind(on_press=pop_win.dismiss)
+		pop_win.open()
+	def pop_game_play(self, instance):
+		content=Button(text='Close Window', size_hint=(0.1, 0.1), background_color=(0, 0.9, 0, 1), font_size=35,)
+		pop_win=Popup(title='Game Rule:\n Player 1:\nType your question at the Top Input Box, then your choices and type the letter of the correct answer at the Answer Box(at the bottom), when done press lock. \nPlayer 2: \n Choose the letter, then press final answer button, then press the check button', content=content, size_hint=(1, 1), title_size=45, auto_dismiss=False)
+		content.bind(on_press=pop_win.dismiss)
+		pop_win.open()
+	def spinner_option(self, spinner, text):
+		if text=='Question':
+			self.option_num=len(self.ab.list_orig)	
+		elif text=='5 Questions':
+			self.option_num=5
+		elif text=='10 Questions':
+			self.option_num=10
+		self.ab=RandomQuestion(self.option_num)
+	def spinner_menu(self, spinner, text):
+		if text=='Exit':
+			exit()
+		elif text=='Game Play':
+			self.pop_game_play(self)
+		elif text=='Score':
+			self.score()
+		elif text=='Reset':
+			self.__init__()	
+
+class RandomQuestion:
+	def __init__(self, option_no):
+		self.option_no=option_no
+		self.questions=("________ is the capacity to do work.", "Electron found in the outer most shell or orbit of an atom.", "Classification of material having less than four valence electrons.", "Unit of electric charge, which is equivalent to 6.25 x 10**18 electrons or protons.", "A substance that cannot be decomposed by any further by chemical action.", "Anything that occupies space and has weight.")
+		self.answers=("Energy", "Valence Electron", "Conductor", "Coulomb", "Element", "Matter")
+		self.list_orig=[i for i in range(self.option_no)]
+		self.list=self.list_orig.copy()
+		random.shuffle(self.list)
+
+	def generate_questions_choices(self):
+		done1=False
+		new_list=[]
+		while not done1:
+			if len(self.list)==len(new_list):
+				break
+			else:
+				pick_question=self.questions[self.list[0]]
+				pick_answer=self.answers[self.list[0]]
+				done1=True	
+		rand_no=random.choice((0, 1, 2, 3))
+		list_choices=[]
+		done2=False
+		while not done2:
+			choices=random.choice(self.answers)
+			if choices==pick_answer:
+				pass
+			else:
+				if choices in list_choices:
+					pass
+				else:
+					list_choices.append(choices)
+					if len(list_choices)==3:
+						list_choices.insert(rand_no, pick_answer)
+						self.list.remove(self.list[0])
+						done2=True
+		return pick_question, pick_answer, list_choices
+
+		
+class GuessingApp(App):
+	def build(self):
+		return Exe_game()	
+
+		
+if __name__=='__main__':
+	GuessingApp().run()
